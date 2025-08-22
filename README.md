@@ -18,7 +18,7 @@ You can configure rules in Rider Settings.
   - From glob
   - To template
   - Button text
-  - Message text (optional banner text)
+  - Message text
 - Add opens a small dialog to enter or flip From/To more comfortably; you can also edit inline in the table.
 - Validation requires From glob and To template to be non‑empty.
 - Click Apply or OK to save. Changes are stored per project and take effect immediately.

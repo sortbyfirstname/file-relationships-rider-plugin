@@ -21,7 +21,7 @@
 
     <p><b>Configure via Settings</b>: File &gt; Settings &gt; Tools &gt; File Relationships (macOS: Rider &gt; Settings &gt; Tools &gt; File Relationships).</p>
     <ul>
-      <li>Rule fields: Name, From glob, To template, Button text, Message text (optional).</li>
+      <li>Rule fields: Name, From glob, To template, Button text, Message text.</li>
       <li>Supports wildcards <code>*</code> and <code>**</code>, and capture groups referenced as <code>$1</code>, <code>$2</code>, ...</li>
       <li>Multiple matches are shown in order with one button per rule; an “Open all related files (N)” action is also available.</li>
     </ul>

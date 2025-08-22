@@ -86,7 +86,7 @@ class RuleEditDialog(
             .addLabeledComponent(JLabel("Name:"), nameField, 1, false)
             .addLabeledComponent(JLabel("From glob   ⇄   To template:"), fromToRow, 1, false)
             .addLabeledComponent(JLabel("Button text:"), buttonTextField, 1, false)
-            .addLabeledComponent(JLabel("Message text (optional):"), messageTextField, 1, false)
+            .addLabeledComponent(JLabel("Message text:"), messageTextField, 1, false)
             .panel.apply {
                 // Set a sensible fixed dialog size similar to External Tools dialogs
                 // Use non-zero height to ensure fields are visible
