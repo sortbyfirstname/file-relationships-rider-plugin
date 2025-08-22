@@ -1,0 +1,47 @@
+<idea-plugin require-restart="true">
+  <id>com.aaronseabrook.plugins.filerelationships</id>
+  <name>File Relationships</name>
+  <version>_PLACEHOLDER_</version>
+  <vendor url="https://github.com/sortbyfirstname/file-relationships-rider-plugin">Aaron Seabrook</vendor>
+  <depends>com.intellij.modules.rider</depends>
+
+  <description><![CDATA[
+    <p><b>Define relationships between files</b> based on folder/path patterns and open the related file in one click.</p>
+
+    <p>How it works:</p>
+    <ul>
+      <li>The plugin computes the file path relative to the project root and tries your rules in order.</li>
+      <li>All matching rules are considered. If a related target exists on disk, the plugin shows:</li>
+      <ul>
+        <li>an editor notification banner with buttons, and</li>
+        <li>an editor context menu action.</li>
+      </ul>
+      <li>Clicking either opens the related file.</li>
+    </ul>
+
+    <p><b>Configure via Settings</b>: File &gt; Settings &gt; Tools &gt; File Relationships (macOS: Rider &gt; Settings &gt; Tools &gt; File Relationships).</p>
+    <ul>
+      <li>Rule fields: Name, From glob, To template, Button text, Message text (optional).</li>
+      <li>Supports wildcards <code>*</code> and <code>**</code>, and capture groups referenced as <code>$1</code>, <code>$2</code>, ...</li>
+      <li>Multiple matches are shown in order with one button per rule; an “Open all related files (N)” action is also available.</li>
+    </ul>
+
+    <p>Tip: Use forward slashes '/' in patterns; paths are normalized on all OSes. Rules are stored per project under <code>.idea/fileRelationships.xml</code>.</p>
+  ]]></description>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <editorNotificationProvider implementation="com.jetbrains.rider.plugins.filerelationships.ui.RelatedFileNotificationProvider"/>
+    <projectConfigurable id="settings.fileRelationships"
+                         displayName="File Relationships"
+                         parentId="tools"
+                         provider="com.jetbrains.rider.plugins.filerelationships.settings.FileRelationshipsConfigurableProvider"/>
+  </extensions>
+
+  <actions>
+    <action id="com.aaronseabrook.plugins.filerelationships.OpenRelatedFileAction"
+            class="com.jetbrains.rider.plugins.filerelationships.actions.OpenRelatedFileAction"
+            text="Open related file">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>
