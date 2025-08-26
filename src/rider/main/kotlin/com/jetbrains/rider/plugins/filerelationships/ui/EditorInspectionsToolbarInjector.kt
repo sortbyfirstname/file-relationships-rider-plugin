@@ -3,6 +3,7 @@ package com.jetbrains.rider.plugins.filerelationships.ui
 import com.intellij.openapi.actionSystem.*
 import com.intellij.openapi.actionSystem.Separator
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.event.EditorFactoryEvent
 import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -195,10 +196,38 @@ class EditorInspectionsToolbarInjector : EditorFactoryListener {
         popupMenu.show(invoker, pt.x, pt.y)
     }
 
+    private fun removeOurToolbar(root: JComponent): Boolean {
+        val comp = findComponent(root) { it is JComponent && it.name == COMPONENT_NAME } as? JComponent ?: return false
+        val parent = comp.parent ?: return false
+        return try {
+            parent.remove(comp)
+            parent.revalidate()
+            parent.repaint()
+            true
+        } catch (_: Throwable) {
+            false
+        }
+    }
+
     companion object {
         private val INSTALLED_KEY = Key.create<Boolean>("FileRelationships.ToolbarInstalled")
         private const val COMPONENT_NAME = "FileRelationships.ToolbarButton"
         private const val OPEN_ACTION_ID = "com.aaronseabrook.plugins.filerelationships.OpenRelatedFileAction"
         private const val INSPECTIONS_PLACE = "EditorInspectionsToolbar"
+
+        fun refreshForProject(project: Project) {
+            val settings = project.getService(FileRelationshipsSettings::class.java)
+            val editors = EditorFactory.getInstance().allEditors
+            val instance = EditorInspectionsToolbarInjector()
+            for (editor in editors) {
+                if (editor.project != project) continue
+                val root = editor.component
+                if (settings.getDisplayMode() == FileRelationshipsSettings.DisplayMode.Icon) {
+                    instance.installIfPossible(project, root, editor)
+                } else {
+                    instance.removeOurToolbar(root)
+                }
+            }
+        }
     }
 }

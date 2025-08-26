@@ -17,6 +17,7 @@ import javax.swing.JPanel
 import javax.swing.JLabel
 import com.intellij.openapi.ui.ComboBox
 import javax.swing.table.AbstractTableModel
+import com.jetbrains.rider.plugins.filerelationships.ui.EditorInspectionsToolbarInjector
 
 class FileRelationshipsConfigurable(private val project: Project) : SearchableConfigurable, Configurable.NoScroll {
     private val service get() = project.getService(FileRelationshipsSettings::class.java)
@@ -181,6 +182,8 @@ class FileRelationshipsConfigurable(private val project: Project) : SearchableCo
         service.setDisplayMode(selectedMode)
         localDisplayMode = selectedMode
         EditorNotifications.getInstance(project).updateAllNotifications()
+        // Ensure the toolbar icon is added/removed immediately without reopening files
+        EditorInspectionsToolbarInjector.refreshForProject(project)
     }
 
     override fun reset() {
