@@ -1,9 +1,6 @@
 name: Publish Plugin to JetBrains Marketplace
 
 on:
-  push:
-    tags:
-      - 'v*'
   release:
     types: [published]
 
