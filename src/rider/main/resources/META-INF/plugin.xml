@@ -31,6 +31,7 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <editorNotificationProvider implementation="com.jetbrains.rider.plugins.filerelationships.ui.RelatedFileNotificationProvider"/>
+    <editorFactoryListener implementation="com.jetbrains.rider.plugins.filerelationships.ui.EditorInspectionsToolbarInjector"/>
     <projectConfigurable id="settings.fileRelationships"
                          displayName="File Relationships"
                          parentId="tools"

@@ -40,6 +40,8 @@ class OpenRelatedFileAction : AnAction(), DumbAware {
         } else {
             "Open related files (${items.size})"
         }
+        // Ensure toolbar button displays the requested icon
+        e.presentation.icon = com.intellij.icons.AllIcons.Hierarchy.Subtypes
     }
 
     override fun actionPerformed(e: AnActionEvent) {
