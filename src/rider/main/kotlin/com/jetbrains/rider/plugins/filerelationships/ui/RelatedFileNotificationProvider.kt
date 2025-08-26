@@ -17,11 +17,13 @@ class RelatedFileNotificationProvider : EditorNotificationProvider, DumbAware {
     override fun collectNotificationData(project: Project, file: com.intellij.openapi.vfs.VirtualFile): JFunction<in FileEditor, out JComponent?>? {
         if (!project.isInitialized) return null
         if (DumbService.isDumb(project)) return null
+        val settings = project.getService(FileRelationshipsSettings::class.java)
+        if (settings.getDisplayMode() == FileRelationshipsSettings.DisplayMode.Icon) return null
         val basePath = project.basePath ?: return null
         val lfs = LocalFileSystem.getInstance()
         val baseVf = lfs.findFileByPath(basePath) ?: return null
         val rel = com.intellij.openapi.vfs.VfsUtilCore.getRelativePath(file, baseVf, '/') ?: return null
-        val compiled = project.getService(FileRelationshipsSettings::class.java).getCompiledRules()
+        val compiled = settings.getCompiledRules()
         val all = RelationshipMatcher.mapAllToRelatedPathsCompiled(rel, compiled)
         if (all.isEmpty()) return null
         val items = all.mapNotNull { m ->

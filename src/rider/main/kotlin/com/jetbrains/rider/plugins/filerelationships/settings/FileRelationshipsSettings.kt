@@ -21,7 +21,10 @@ class FileRelationshipsSettings(private val project: Project) : PersistentStateC
     class State {
         // Start with no default rules; users configure rules explicitly in Settings.
         var rules: MutableList<RelationshipRule> = mutableListOf()
+        var displayMode: DisplayMode = DisplayMode.Banner
     }
+
+    enum class DisplayMode { Banner, Icon }
 
     data class RelationshipRule(
         var id: String = "",
@@ -53,6 +56,12 @@ class FileRelationshipsSettings(private val project: Project) : PersistentStateC
         state.rules = newRules.toMutableList()
         // invalidate cache on change
         compiledCache = emptyList()
+    }
+
+    fun getDisplayMode(): DisplayMode = state.displayMode
+
+    fun setDisplayMode(mode: DisplayMode) {
+        state.displayMode = mode
     }
 
     fun getCompiledRules(): List<RelationshipMatcher.CompiledRule> {

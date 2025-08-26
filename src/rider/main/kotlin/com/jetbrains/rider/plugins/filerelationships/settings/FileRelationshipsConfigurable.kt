@@ -9,14 +9,13 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.ui.EditorNotifications
 import com.intellij.ui.TableSpeedSearch
 import com.intellij.ui.ToolbarDecorator
-import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
 import java.awt.BorderLayout
 import java.awt.Dimension
-import javax.swing.JButton
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.JToolBar
+import javax.swing.JLabel
+import com.intellij.openapi.ui.ComboBox
 import javax.swing.table.AbstractTableModel
 
 class FileRelationshipsConfigurable(private val project: Project) : SearchableConfigurable, Configurable.NoScroll {
@@ -25,6 +24,9 @@ class FileRelationshipsConfigurable(private val project: Project) : SearchableCo
     private var panel: JPanel? = null
     private var table: JBTable? = null
     private var model: RulesTableModel? = null
+
+    private var displayModeCombo: ComboBox<FileRelationshipsSettings.DisplayMode>? = null
+    private var localDisplayMode: FileRelationshipsSettings.DisplayMode = FileRelationshipsSettings.DisplayMode.Banner
 
     private var localRules: MutableList<FileRelationshipsSettings.RelationshipRule> = mutableListOf()
 
@@ -36,6 +38,7 @@ class FileRelationshipsConfigurable(private val project: Project) : SearchableCo
 
         // Initialize from persisted settings so the page opens with current rules
         localRules = service.getRules().map { it.copy() }.toMutableList()
+        localDisplayMode = service.getDisplayMode()
 
         val m = RulesTableModel(localRules)
         model = m
@@ -147,24 +150,43 @@ class FileRelationshipsConfigurable(private val project: Project) : SearchableCo
         })
 
         val main = JPanel(BorderLayout())
+
+        // Top bar for general settings
+        val top = JPanel(java.awt.FlowLayout(java.awt.FlowLayout.LEFT))
+        val modeLabel = JLabel("Display mode:")
+        val modeCombo = ComboBox(FileRelationshipsSettings.DisplayMode.values())
+        displayModeCombo = modeCombo
+        modeCombo.selectedItem = localDisplayMode
+        top.add(modeLabel)
+        top.add(modeCombo)
+
+        main.add(top, BorderLayout.NORTH)
         main.add(decorator.createPanel(), BorderLayout.CENTER)
         panel = main
         return main
     }
 
     override fun isModified(): Boolean {
-        val current = service.getRules()
-        return current != localRules
+        val currentRules = service.getRules()
+        val modifiedRules = currentRules != localRules
+        val selectedMode = (displayModeCombo?.selectedItem as? FileRelationshipsSettings.DisplayMode) ?: localDisplayMode
+        val modeModified = service.getDisplayMode() != selectedMode
+        return modifiedRules || modeModified
     }
 
     override fun apply() {
         validateRules(localRules)
         service.setRules(localRules)
+        val selectedMode = (displayModeCombo?.selectedItem as? FileRelationshipsSettings.DisplayMode) ?: localDisplayMode
+        service.setDisplayMode(selectedMode)
+        localDisplayMode = selectedMode
         EditorNotifications.getInstance(project).updateAllNotifications()
     }
 
     override fun reset() {
         localRules = service.getRules().map { it.copy() }.toMutableList()
+        localDisplayMode = service.getDisplayMode()
+        displayModeCombo?.selectedItem = localDisplayMode
         model?.let { m ->
             m.items = localRules
             m.fireTableDataChanged()
@@ -176,6 +198,7 @@ class FileRelationshipsConfigurable(private val project: Project) : SearchableCo
         panel = null
         table = null
         model = null
+        displayModeCombo = null
     }
 
     private fun validateRules(rules: List<FileRelationshipsSettings.RelationshipRule>) {
